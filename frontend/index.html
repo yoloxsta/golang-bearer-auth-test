@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go REST API Tester</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
     <style>
         * {
             margin: 0;
@@ -30,6 +31,18 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             margin-bottom: 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 4em;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         h1 {
@@ -257,7 +270,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>🚀 Go REST API Tester</h1>
+            <div class="logo">🚀</div>
+            <h1>Go REST API Tester</h1>
             <p class="subtitle">Test all HTTP methods with Bearer Token Authentication</p>
             <span class="status" id="serverStatus">Checking...</span>
         </header>
