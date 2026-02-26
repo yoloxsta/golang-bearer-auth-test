@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <button onclick="testPost()">Test POST /users</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testPost() {
+            const result = document.getElementById('result');
+            result.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:8080/users', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer secret_token_12345',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        username: 'testuser'
+                    })
+                });
+                
+                const data = await response.json();
+                result.textContent = `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.textContent = `Error: ${error.message}\n\nThis usually means:\n1. API server is not running\n2. CORS issue\n3. Network problem\n\nCheck browser console (F12) for details.`;
+            }
+        }
+    </script>
+</body>
+</html>

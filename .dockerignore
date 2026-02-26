@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+
+# Build artifacts
+*.exe
+*.test
+*.out
+
+# Postman
+postman_collection.json
+
+# Frontend (served separately)
+frontend/
+
+# Test files
+*_test.go
+demo.go
+main.go

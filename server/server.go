@@ -5,26 +5,32 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 )
 
-const (
-	PORT         = "8080"
-	VALID_TOKEN  = "secret_token_12345"
+var (
+	PORT        = "8080"
+	VALID_TOKEN = "secret_token_12345"
 )
 
 type User struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Post struct {
-	UserID int    `json:"userId"`
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Body   string `json:"body"`
+	ID        int       `json:"id"`
+	UserID    int       `json:"userId"`
+	Title     string    `json:"title"`
+	Body      string    `json:"body"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type ErrorResponse struct {
@@ -117,22 +123,36 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func getUserHandler(w http.ResponseWriter, r *http.Request) {
-	user := User{
-		ID:       1,
-		Name:     "John Doe",
-		Email:    "john.doe@example.com",
-		Username: "johndoe",
+	// Extract ID from URL path
+	// For /users/1, we get ID 1
+	// This is a simple implementation - in production use a router like gorilla/mux
+	pathParts := strings.Split(r.URL.Path, "/")
+	if len(pathParts) < 3 {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+		return
+	}
+	
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
+	user, err := getUserByID(id)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "User not found")
+		return
 	}
 	
 	respondWithJSON(w, http.StatusOK, user)
 }
 
 func getPostHandler(w http.ResponseWriter, r *http.Request) {
-	post := Post{
-		UserID: 1,
-		ID:     1,
-		Title:  "My First Post",
-		Body:   "This is the content of my first post. Testing Bearer token authentication!",
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
+	post, err := getPostByID(id)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Post not found")
+		return
 	}
 	
 	respondWithJSON(w, http.StatusOK, post)
@@ -151,18 +171,25 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Create new user (simulated)
-	newUser := User{
-		ID:       2,
-		Name:     req.Name,
-		Email:    req.Email,
-		Username: req.Username,
+	// Create user in database
+	user, err := createUser(req.Name, req.Email, req.Username)
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "unique") {
+			respondWithError(w, http.StatusConflict, "User with this email or username already exists")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to create user")
+		}
+		return
 	}
 	
-	respondWithJSON(w, http.StatusCreated, newUser)
+	respondWithJSON(w, http.StatusCreated, user)
 }
 
 func updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
 	var req UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request body")
@@ -175,48 +202,64 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Update user (simulated)
-	updatedUser := User{
-		ID:       1,
-		Name:     req.Name,
-		Email:    req.Email,
-		Username: req.Username,
+	// Update user in database
+	user, err := updateUser(id, req.Name, req.Email, req.Username)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			respondWithError(w, http.StatusNotFound, "User not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to update user")
+		}
+		return
 	}
 	
-	respondWithJSON(w, http.StatusOK, updatedUser)
+	respondWithJSON(w, http.StatusOK, user)
 }
 
 func patchUserHandler(w http.ResponseWriter, r *http.Request) {
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
 	var req PatchUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 	
-	// Start with existing user
-	user := User{
-		ID:       1,
-		Name:     "John Doe",
-		Email:    "john.doe@example.com",
-		Username: "johndoe",
-	}
-	
-	// Apply partial updates
-	if req.Name != nil {
-		user.Name = *req.Name
-	}
-	if req.Email != nil {
-		user.Email = *req.Email
+	// Update user in database
+	user, err := patchUserDB(id, req.Name, req.Email)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			respondWithError(w, http.StatusNotFound, "User not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to update user")
+		}
+		return
 	}
 	
 	respondWithJSON(w, http.StatusOK, user)
 }
 
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
+	err := deleteUser(id)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			respondWithError(w, http.StatusNotFound, "User not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to delete user")
+		}
+		return
+	}
+	
 	response := SuccessResponse{
 		Message: "User deleted successfully",
 		Data: map[string]int{
-			"id": 1,
+			"id": id,
 		},
 	}
 	
@@ -236,40 +279,60 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Create new post (simulated)
-	newPost := Post{
-		UserID: req.UserID,
-		ID:     2,
-		Title:  req.Title,
-		Body:   req.Body,
+	// Create post in database
+	post, err := createPost(req.UserID, req.Title, req.Body)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to create post")
+		return
 	}
 	
-	respondWithJSON(w, http.StatusCreated, newPost)
+	respondWithJSON(w, http.StatusCreated, post)
 }
 
 func updatePostHandler(w http.ResponseWriter, r *http.Request) {
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
 	var req CreatePostRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 	
-	// Update post (simulated)
-	updatedPost := Post{
-		UserID: req.UserID,
-		ID:     1,
-		Title:  req.Title,
-		Body:   req.Body,
+	// Update post in database
+	post, err := updatePost(id, req.UserID, req.Title, req.Body)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			respondWithError(w, http.StatusNotFound, "Post not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to update post")
+		}
+		return
 	}
 	
-	respondWithJSON(w, http.StatusOK, updatedPost)
+	respondWithJSON(w, http.StatusOK, post)
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
+	pathParts := strings.Split(r.URL.Path, "/")
+	var id int
+	fmt.Sscanf(pathParts[2], "%d", &id)
+	
+	err := deletePost(id)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			respondWithError(w, http.StatusNotFound, "Post not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to delete post")
+		}
+		return
+	}
+	
 	response := SuccessResponse{
 		Message: "Post deleted successfully",
 		Data: map[string]int{
-			"id": 1,
+			"id": id,
 		},
 	}
 	
@@ -297,11 +360,36 @@ func respondWithError(w http.ResponseWriter, code int, message string) {
 }
 
 func main() {
+	// Load environment variables
+	if port := os.Getenv("PORT"); port != "" {
+		PORT = port
+	}
+	if token := os.Getenv("BEARER_TOKEN"); token != "" {
+		VALID_TOKEN = token
+	}
+	
+	// Initialize database
+	if err := InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer CloseDB()
+	
 	// Routes - Health check (no auth)
 	http.HandleFunc("/health", healthHandler)
 	
 	// User routes (with auth)
-	http.HandleFunc("/users/1", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	// Handle /users (no trailing slash) for POST
+	http.HandleFunc("/users", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			createUserHandler(w, r)
+		} else {
+			respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	}))
+	
+	// Handle /users/{id} (with trailing slash)
+	http.HandleFunc("/users/", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		// Handle /users/{id}
 		switch r.Method {
 		case http.MethodGet:
 			getUserHandler(w, r)
@@ -316,17 +404,19 @@ func main() {
 		}
 	}))
 	
-	http.HandleFunc("/users", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			createUserHandler(w, r)
-		default:
+	// Post routes (with auth)
+	// Handle /posts (no trailing slash) for POST
+	http.HandleFunc("/posts", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			createPostHandler(w, r)
+		} else {
 			respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		}
 	}))
 	
-	// Post routes (with auth)
-	http.HandleFunc("/posts/1", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	// Handle /posts/{id} (with trailing slash)
+	http.HandleFunc("/posts/", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		// Handle /posts/{id}
 		switch r.Method {
 		case http.MethodGet:
 			getPostHandler(w, r)
@@ -334,15 +424,6 @@ func main() {
 			updatePostHandler(w, r)
 		case http.MethodDelete:
 			deletePostHandler(w, r)
-		default:
-			respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	}))
-	
-	http.HandleFunc("/posts", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			createPostHandler(w, r)
 		default:
 			respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		}
@@ -357,16 +438,16 @@ func main() {
 	fmt.Println("\n  Health:")
 	fmt.Println("    GET    /health              - No auth required")
 	fmt.Println("\n  Users:")
-	fmt.Println("    GET    /users/1             - Get user")
+	fmt.Println("    GET    /users/{id}          - Get user by ID")
 	fmt.Println("    POST   /users               - Create user")
-	fmt.Println("    PUT    /users/1             - Update user (full)")
-	fmt.Println("    PATCH  /users/1             - Update user (partial)")
-	fmt.Println("    DELETE /users/1             - Delete user")
+	fmt.Println("    PUT    /users/{id}          - Update user (full)")
+	fmt.Println("    PATCH  /users/{id}          - Update user (partial)")
+	fmt.Println("    DELETE /users/{id}          - Delete user")
 	fmt.Println("\n  Posts:")
-	fmt.Println("    GET    /posts/1             - Get post")
+	fmt.Println("    GET    /posts/{id}          - Get post by ID")
 	fmt.Println("    POST   /posts               - Create post")
-	fmt.Println("    PUT    /posts/1             - Update post")
-	fmt.Println("    DELETE /posts/1             - Delete post")
+	fmt.Println("    PUT    /posts/{id}          - Update post")
+	fmt.Println("    DELETE /posts/{id}          - Delete post")
 	fmt.Println("\n🔐 All endpoints (except /health) require:")
 	fmt.Println("    Authorization: Bearer secret_token_12345")
 	fmt.Println("========================================")

@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: go-rest-db
+    environment:
+      - POSTGRES_USER=apiuser
+      - POSTGRES_PASSWORD=apipassword
+      - POSTGRES_DB=restapi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - api-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apiuser -d restapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # REST API Server
+  api:
+    build: .
+    container_name: go-rest-api
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - BEARER_TOKEN=secret_token_12345
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=apiuser
+      - DB_PASSWORD=apipassword
+      - DB_NAME=restapi
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - api-network
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: go-rest-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
