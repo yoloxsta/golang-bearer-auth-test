@@ -12,7 +12,7 @@ import (
 
 var (
 	PORT        = "8080"
-	VALID_TOKEN = "secret_token_12345"
+	VALID_TOKEN = os.Getenv("BEARER_TOKEN")
 )
 
 type User struct {
@@ -348,6 +348,14 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, response)
 }
 
+func configHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	response := map[string]string{
+		"bearerToken": VALID_TOKEN,
+	}
+	respondWithJSON(w, http.StatusOK, response)
+}
+
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 	w.Header().Set("Content-Type", "application/json")
@@ -376,6 +384,9 @@ func main() {
 	
 	// Routes - Health check (no auth)
 	http.HandleFunc("/health", healthHandler)
+	
+	// Config endpoint (no auth) - returns bearer token for frontend
+	http.HandleFunc("/config", configHandler)
 	
 	// User routes (with auth)
 	// Handle /users (no trailing slash) for POST

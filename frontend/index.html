@@ -442,11 +442,30 @@
 
     <script>
         const API_URL = 'http://localhost:8080';
-        const TOKEN = 'secret_token_12345';
+        let TOKEN = '';
+
+        // Load token from backend on page load
+        window.addEventListener('load', async () => {
+            await loadTokenFromBackend();
+            checkServerStatus();
+        });
+
+        // Fetch token from backend /config endpoint
+        async function loadTokenFromBackend() {
+            try {
+                const response = await fetch(`${API_URL}/config`);
+                if (response.ok) {
+                    const data = await response.json();
+                    TOKEN = data.bearerToken;
+                } else {
+                    console.error('❌ Failed to load token from backend');
+                }
+            } catch (error) {
+                console.error('❌ Error loading token:', error);
+            }
+        }
 
         // Check server status on load
-        window.addEventListener('load', checkServerStatus);
-
         async function checkServerStatus() {
             try {
                 const response = await fetch(`${API_URL}/health`);
