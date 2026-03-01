@@ -276,6 +276,23 @@
             <span class="status" id="serverStatus">Checking...</span>
         </header>
 
+        <!-- Token Verification Card -->
+        <div class="card" style="margin-bottom: 20px; background: #f8f9fa; border: 2px solid #667eea;">
+            <h2>🔐 Token Verification Test</h2>
+            <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">
+                Test if Bearer token authentication is working correctly
+            </p>
+            <div class="btn-group">
+                <button class="btn-primary" onclick="testWithToken()" style="background: #28a745;">
+                    ✅ Test WITH Token (Should Work)
+                </button>
+                <button class="btn-danger" onclick="testWithoutToken()" style="background: #dc3545;">
+                    ❌ Test WITHOUT Token (Should Fail)
+                </button>
+            </div>
+            <div id="tokenTestResult" style="margin-top: 15px;"></div>
+        </div>
+
         <div class="grid">
             <!-- User Management -->
             <div class="card">
@@ -478,6 +495,61 @@
             } catch (error) {
                 document.getElementById('serverStatus').textContent = '🔴 Server Offline';
                 document.getElementById('serverStatus').className = 'status offline';
+            }
+        }
+
+        // Test WITH token (should succeed)
+        async function testWithToken() {
+            try {
+                const response = await fetch(`${API_URL}/users/1`, {
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResponse('tokenTestResult', {
+                        status: '✅ SUCCESS',
+                        message: 'Bearer token is working correctly!',
+                        token: TOKEN,
+                        response: data
+                    });
+                } else {
+                    displayResponse('tokenTestResult', {
+                        status: '❌ FAILED',
+                        message: 'Token authentication failed',
+                        error: data
+                    }, true);
+                }
+            } catch (error) {
+                displayResponse('tokenTestResult', { error: error.message }, true);
+            }
+        }
+
+        // Test WITHOUT token (should fail with 401)
+        async function testWithoutToken() {
+            try {
+                const response = await fetch(`${API_URL}/users/1`);
+                const data = await response.json();
+                
+                if (response.status === 401) {
+                    displayResponse('tokenTestResult', {
+                        status: '✅ CORRECT BEHAVIOR',
+                        message: 'Server correctly rejected request without token',
+                        httpStatus: response.status,
+                        error: data.error
+                    });
+                } else {
+                    displayResponse('tokenTestResult', {
+                        status: '⚠️ WARNING',
+                        message: 'Server should have rejected this request!',
+                        httpStatus: response.status,
+                        response: data
+                    }, true);
+                }
+            } catch (error) {
+                displayResponse('tokenTestResult', { error: error.message }, true);
             }
         }
 
