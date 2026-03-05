@@ -97,7 +97,6 @@ Then run:
 ```bash
 go run .
 ```
-
 ## How It Works
 
 ### Configuration (config/config.go)
