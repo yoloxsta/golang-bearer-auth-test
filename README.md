@@ -84,7 +84,6 @@ The `.env.example` is already configured for localhost!
 ```bash
 go run . demo
 ```
-
 ### Option 3: External API
 
 Edit `.env` with your API credentials:
