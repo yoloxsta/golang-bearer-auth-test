@@ -136,7 +136,6 @@ go run server.go
 ```bash
 go run .
 ```
-
 The client will automatically test all HTTP methods (GET, POST, PUT, PATCH, DELETE) and display results.
 
 ### Test with Postman
