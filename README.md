@@ -158,7 +158,6 @@ See `TESTING.md` for detailed testing guide.
 API_BASE_URL=https://api.github.com
 BEARER_TOKEN=ghp_your_github_token
 ```
-
 ### JSONPlaceholder (Testing)
 ```env
 API_BASE_URL=https://jsonplaceholder.typicode.com
