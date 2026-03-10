@@ -213,7 +213,6 @@ for i := 0; i < maxRetries; i++ {
     // Retry logic
 }
 ```
-
 ## Error Handling
 
 The client handles:
