@@ -206,7 +206,6 @@ func (c *APIClient) Post(ctx context.Context, endpoint string, data, result inte
 ```go
 req.Header.Set("X-Custom-Header", "value")
 ```
-
 ### Add retry logic:
 ```go
 for i := 0; i < maxRetries; i++ {
