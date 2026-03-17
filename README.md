@@ -224,7 +224,6 @@ The client handles:
 All errors are wrapped with context for debugging.
 
 ## Best Practices Used
-
 1. **Separation of concerns** - Config, client, models in separate packages
 2. **Context usage** - Proper timeout and cancellation
 3. **Error wrapping** - Clear error messages with context
