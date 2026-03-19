@@ -76,7 +76,6 @@ copy .env.example .env
 # Run the client
 go run .
 ```
-
 The `.env.example` is already configured for localhost!
 
 ### Option 2: Demo Mode (No Network)
