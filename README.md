@@ -246,7 +246,6 @@ All errors are wrapped with context for debugging.
 - Verify API endpoint is accessible
 
 ## Next Steps
-
 - Add unit tests for client package
 - Implement request/response logging
 - Add rate limiting
