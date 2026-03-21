@@ -15,7 +15,6 @@ A complete Go project demonstrating REST API client-server communication with Be
 - ✅ **Error Handling**: Comprehensive error management
 
 ## Project Structure
-
 ```
 .
 ├── .env.example              # Environment template
