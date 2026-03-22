@@ -95,7 +95,6 @@ Then run:
 go run .
 ```
 ## How It Works
-
 ### Configuration (config/config.go)
 - Reads `.env` file line by line
 - Parses key=value pairs
