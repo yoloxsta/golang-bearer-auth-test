@@ -37,7 +37,6 @@ A complete Go project demonstrating REST API client-server communication with Be
     ├── server.go       # Local REST API server
     └── README.md       # Server documentation
 ```
-
 ## 📋 API Endpoints
 
 ### Server Endpoints (localhost:8080)
