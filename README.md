@@ -88,7 +88,6 @@ Edit `.env` with your API credentials:
 API_BASE_URL=https://api.example.com
 BEARER_TOKEN=your_token_here
 ```
-
 Then run:
 ```bash
 go run .
