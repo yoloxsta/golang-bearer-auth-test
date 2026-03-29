@@ -196,7 +196,6 @@ func (c *APIClient) Post(ctx context.Context, endpoint string, data, result inte
     // Implementation here
 }
 ```
-
 ### Add custom headers:
 ```go
 req.Header.Set("X-Custom-Header", "value")
