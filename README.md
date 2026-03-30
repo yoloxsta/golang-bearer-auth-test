@@ -226,7 +226,6 @@ All errors are wrapped with context for debugging.
 6. **Type safety** - Strongly typed structs for responses
 
 ## Common Issues
-
 ### "Failed to open .env file"
 - Make sure `.env` exists in project root
 - Copy from `.env.example`
