@@ -4,7 +4,6 @@
 
 - Go 1.21 or higher
 - Git (for cloning)
-
 ## Installation
 
 ### 1. Clone the repository
