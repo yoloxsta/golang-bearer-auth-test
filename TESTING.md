@@ -20,9 +20,7 @@ go run .
 You'll see all HTTP methods tested automatically! ✅
 
 ---
-
 ## Manual Testing with Postman
-
 ### Setup
 
 1. **Create Environment**
