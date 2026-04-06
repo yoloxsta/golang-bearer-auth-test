@@ -31,7 +31,6 @@ docker-compose up -d
 Open `http://localhost:3000` - the token will be automatically loaded from backend.
 
 ## Endpoints
-
 ### GET /config (No Auth Required)
 Returns the current bearer token from environment.
 
