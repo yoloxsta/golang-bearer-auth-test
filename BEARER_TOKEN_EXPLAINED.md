@@ -11,7 +11,6 @@ BEARER_TOKEN=secret_token_12345
 - Change `secret_token_12345` to any token you want
 
 ---
-
 ## 📁 File 2: `server/server.go` (Backend - Go API)
 
 ### Part 1: Load Token from Environment
