@@ -13,7 +13,6 @@ Files to update with your username:
 - [ ] `demo.go` - Update import paths
 
 ### 3. Verify Files
-
 Check these files exist:
 - [x] README.md
 - [x] SETUP.md
