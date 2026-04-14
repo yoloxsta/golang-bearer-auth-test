@@ -1,4 +1,4 @@
-# 🎨 Frontend UI Guide
+#  Frontend UI Guide
 
 ## ✅ What Just Happened
 
