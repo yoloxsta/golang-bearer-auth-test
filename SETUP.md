@@ -18,7 +18,6 @@ cd go-rest-api-lab
 ```bash
 copy .env.example .env
 ```
-
 The default `.env.example` is configured for local testing.
 
 ### 3. Install dependencies
