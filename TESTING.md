@@ -47,7 +47,6 @@ GET {{base_url}}/users/1
 Authorization: Bearer {{token}}
 ```
 Expected: 200 OK with user data
-
 #### 3. POST User
 ```
 POST {{base_url}}/users
