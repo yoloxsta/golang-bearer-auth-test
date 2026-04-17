@@ -38,7 +38,7 @@ go run server.go
 
 You should see:
 ```
-🚀 REST API Server Started
+ REST API Server Started
 Server running on: http://localhost:8080
 Valid Bearer Token: secret_token_12345
 ```
