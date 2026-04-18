@@ -25,7 +25,6 @@ The default `.env.example` is configured for local testing.
 ```bash
 go mod tidy
 ```
-
 ## Running the Project
 
 ### Method 1: Local Server Testing (Recommended)
