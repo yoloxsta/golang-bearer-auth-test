@@ -8,7 +8,7 @@ A complete, production-ready Go REST API lab demonstrating:
 - Automated testing suite
 - Clean, modular architecture
 
-## 📦 What's Included
+##  What's Included
 
 ### Client Side
 - **HTTP Client** (`client/client.go`)
