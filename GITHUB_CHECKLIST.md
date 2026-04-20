@@ -1,6 +1,6 @@
 # GitHub Push Checklist
 
-## ✅ Pre-Push Checklist
+## Pre-Push Checklist
 
 ### 1. Update Module Path
 - [ ] Open `go.mod`
