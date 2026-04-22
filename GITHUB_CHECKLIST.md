@@ -158,7 +158,7 @@ Should work without issues!
 - [ ] Add to your portfolio
 - [ ] Share with friends learning Go
 
-## 🎨 Optional Enhancements
+## Optional Enhancements
 
 ### Add Badges to README
 
