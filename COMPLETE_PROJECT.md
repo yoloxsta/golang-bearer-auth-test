@@ -1,6 +1,6 @@
 # 🎉 Complete Full-Stack REST API Project
 
-## ✅ Project Complete!
+##  Project Complete!
 
 You now have a **production-ready, fully Dockerized, full-stack REST API application** with PostgreSQL database!
 
