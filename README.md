@@ -1,7 +1,7 @@
 # Go REST API Lab
 A complete Go project demonstrating REST API client-server communication with Bearer token authentication.
 
-## 🚀 Features
+##  Features
 
 - ✅ **All HTTP Methods**: GET, POST, PUT, PATCH, DELETE
 - ✅ **Bearer Token Authentication**: Industry-standard auth
