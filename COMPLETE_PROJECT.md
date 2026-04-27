@@ -5,7 +5,7 @@
 You now have a **production-ready, fully Dockerized, full-stack REST API application** with PostgreSQL database!
 
 ---
-## 📦 What You Have
+##  What You Have
 
 ### 3 Docker Images Built:
 
