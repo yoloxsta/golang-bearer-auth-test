@@ -17,7 +17,6 @@
 You'll see "Go REST API Lab" collection with all requests ready!
 
 ---
-
 ## 📋 Test Scenarios
 
 ### Scenario 1: Health Check (No Auth Required)
