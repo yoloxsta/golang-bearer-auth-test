@@ -8,7 +8,7 @@
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### You Should See:
 - Beautiful purple gradient background
