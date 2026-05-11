@@ -28,7 +28,7 @@ You now have a **production-ready, fully Dockerized, full-stack REST API applica
 
 ---
 
-## 🐳 Docker Setup
+##  Docker Setup
 
 ### Dockerfiles:
 
