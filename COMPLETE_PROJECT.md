@@ -1,4 +1,4 @@
-# 🎉 Complete Full-Stack REST API Project
+# Complete Full-Stack REST API Project
 
 ##  Project Complete!
 
