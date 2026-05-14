@@ -139,7 +139,7 @@ http.HandleFunc("/users/", authMiddleware(func(w http.ResponseWriter, r *http.Re
 
 ---
 
-## 📁 File 3: `frontend/index.html` (Frontend - HTML/JavaScript)
+## File 3: `frontend/index.html` (Frontend - HTML/JavaScript)
 
 ### Part 1: Load Token from Backend
 
