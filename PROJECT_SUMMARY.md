@@ -1,6 +1,6 @@
 # Project Summary
 
-## 🎯 What This Project Does
+##  What This Project Does
 
 A complete, production-ready Go REST API lab demonstrating:
 - HTTP client with Bearer token authentication
