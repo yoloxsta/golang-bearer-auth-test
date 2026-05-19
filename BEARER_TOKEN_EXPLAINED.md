@@ -102,7 +102,6 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 - **Line 105:** `token := strings.TrimPrefix(authHeader, "Bearer ")` - Removes "Bearer " prefix
 - **Line 108-111:** Compares token with `VALID_TOKEN` → If wrong, returns 401 error
 - **Line 114:** If token is valid, allows request to proceed
-
 ---
 
 ### Part 4: Protected Routes (Require Token)
